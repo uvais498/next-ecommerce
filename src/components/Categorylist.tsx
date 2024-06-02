@@ -25,7 +25,7 @@ const CategoryList = async () => {
               />
             </div>
             <h1 className="mt-8 font-light text-cl tracking-wide">
-              Category Name
+              {item.name}
             </h1>
           </Link>
         ))}

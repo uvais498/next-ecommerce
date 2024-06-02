@@ -2,7 +2,9 @@
 
 import { products } from "@wix/stores";
 import { validateHeaderName } from "http";
-import { useState } from "react";
+import { Fascinate } from "next/font/google";
+import { useEffect, useState } from "react";
+import Add from "./Add";
 
 const CustomizeProducts = ({
   productId,
@@ -17,12 +19,24 @@ const CustomizeProducts = ({
     [key: string]: string;
   }>({});
 
+  const [selectedVariant, setSelectedVariant] = useState<products.Variant>({});
+  useEffect(() => {
+    const variant = variants.find((v) => {
+      const variantChoices = v.choices;
+      if (!variantChoices) return false;
+      return Object.entries(selectedOptions).every(
+        ([key, value]) => variantChoices[key] === value
+      );
+    });
+    setSelectedVariant(variant!);
+    console.log(`selected options`, selectedOptions);
+  }, [selectedOptions, variants]);
+
   const handleOptionSelect = (optionType: string, choice: string) => {
     setSelectedOptions((prev) => ({ ...prev, [optionType]: choice }));
   };
   const isVariantInStock = (choices: { [key: string]: string }) => {
     return variants.some((variant) => {
-      debugger;
       const variantChoices = variant.choices;
       if (!variantChoices) return false;
 
@@ -83,7 +97,7 @@ const CustomizeProducts = ({
                       ? "#FBCFE8"
                       : "white",
                     color: selected || disabled ? "white" : "#f35c7a",
-                    boxShadow : disabled ? "none" : ""
+                    boxShadow: disabled ? "none" : "",
                   }}
                   onClick={clickHandler}
                 >
@@ -94,6 +108,13 @@ const CustomizeProducts = ({
           </ul>
         </div>
       ))}
+      <Add
+        productId={productId}
+        variantId={
+          selectedVariant?._id || "00000000-0000-0000-0000-000000000000"
+        }
+        stockNumber={selectedVariant.stock?.quantity || 0}
+      />
     </div>
   );
 };
